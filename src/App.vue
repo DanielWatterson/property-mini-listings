@@ -5,7 +5,9 @@
       <div class="nav-bar">
         <div class="logo">🏡 Cozy Homes Co.</div>
         <h1 class="title">Property Listings</h1>
-        <div class="wishlist">❤️ Saved: <span>{{ wishlist.length }}</span></div>
+        <div class="wishlist">
+          ❤️ Saved: <span>{{ wishlist.length }}</span>
+        </div>
       </div>
 
       <!-- Filters row -->
@@ -17,13 +19,19 @@
           Available Only
         </button>
       </div>
+
+      <!-- Search & Sort -->
+      <div class="search-sort">
+        <input type="text" v-model="searchQuery" placeholder="Search by title or location..." />
+        <button @click="toggleSort">Sort: {{ sortAsc ? 'Low → High' : 'High → Low' }}</button>
+      </div>
     </header>
 
     <!-- Property Grid -->
     <main>
       <div class="property-grid">
         <PropertyCard
-          v-for="property in filteredProperties"
+          v-for="property in sortedAndFilteredProperties"
           :key="property.title"
           :property="property"
           @add-to-wishlist="toggleSave"
@@ -34,77 +42,111 @@
 </template>
 
 <script>
-import PropertyCard from "./components/PropertyCard.vue";
+import PropertyCard from './components/PropertyCard.vue'
 
 export default {
-  name: "App",
+  name: 'App',
   components: { PropertyCard },
 
   data() {
     return {
       showAvailableOnly: false,
       wishlist: [],
+      searchQuery: '',
+      loading: true,
+      sortAsc: true, // true = low → high, false = high → low
       properties: [
         {
-          title: "Modern 3-Bedroom Apartment",
-          agent: "Listed by: RealtyPro SA",
-          price: "R850,000",
-          type: "Apartment",
-          location: "Cape Town",
+          title: 'Modern 3-Bedroom Apartment',
+          agent: 'Listed by: RealtyPro SA',
+          price: 85000,
+          type: 'Apartment',
+          location: 'Cape Town',
           available: true,
-          image: "https://i.postimg.cc/NjgWTbTt/faw-chefs-knives.jpg",
+          image: 'https://i.postimg.cc/zv8vB7jF/3-Bedroom-Family-Apartment.jpg',
         },
         {
-          title: "Family Home with Garden",
-          agent: "Listed by: HomeSmart",
-          price: "R1,200,000",
-          type: "House",
-          location: "Johannesburg",
+          title: 'Family Home with Garden',
+          agent: 'Listed by: HomeSmart',
+          price: 1200000,
+          type: 'House',
+          location: 'False Bay  ',
           available: false,
-          image: "https://i.postimg.cc/dVDn9vTP/istockphoto-1127973172.jpg",
+          image: 'https://i.postimg.cc/wMgMv2Vw/Family-Home-with-Garden.jpg',
         },
         {
-          title: "Luxury Penthouse Suite",
-          agent: "Listed by: Skyline Estates",
-          price: "R2,100,000",
-          type: "Penthouse",
-          location: "Durban",
+          title: 'Camps Bay Home Villa',
+          agent: 'Listed by: HouseLife SA',
+          price: 200000000,
+          type: 'Home Villa',
+          location: 'Camps Bay',
           available: true,
-          image: "https://i.postimg.cc/4xnw1ZhR/2548301.jpg",
+          image: 'https://i.postimg.cc/brprJggf/Camps-Bay-Home-Villa.jpg',
+        },
+        {
+          title: 'Art Deco Studio Apartment',
+          agent: 'Listed by: HomeSmart',
+          price: 1200000,
+          type: 'Apartment',
+          location: 'Johannesburg',
+          available: true,
+          image: 'https://i.postimg.cc/Bb4b6pg7/Art-Deco-Studio-Apartment.jpg',
+        },
+        {
+          title: 'Luxury Penthouse Suite',
+          agent: 'Listed by: Skyline Estates',
+          price: 2100000,
+          type: 'Penthouse',
+          location: 'Johannesburg, Sandton',
+          available: true,
+          image: 'https://i.postimg.cc/8cNc54H0/Luxury-Penthouse-Suite.jpg',
         },
       ],
-    };
+    }
   },
 
   computed: {
+    // Filter by availability and search query
     filteredProperties() {
-      return this.showAvailableOnly
-        ? this.properties.filter((p) => p.available)
-        : this.properties;
+      return this.properties.filter((p) => {
+        const matchesSearch =
+          p.title.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
+          p.location.toLowerCase().includes(this.searchQuery.toLowerCase())
+        return matchesSearch && (this.showAvailableOnly ? p.available : true)
+      })
+    },
+    // Apply sorting after filtering
+    sortedAndFilteredProperties() {
+      return [...this.filteredProperties].sort((a, b) =>
+        this.sortAsc ? a.price - b.price : b.price - a.price,
+      )
     },
   },
 
   methods: {
     toggleSave(property) {
-      const index = this.wishlist.findIndex((item) => item.title === property.title);
-      if (index === -1) this.wishlist.push(property);
-      else this.wishlist.splice(index, 1);
+      const index = this.wishlist.findIndex((item) => item.title === property.title)
+      if (index === -1) this.wishlist.push(property)
+      else this.wishlist.splice(index, 1)
+    },
+    toggleSort() {
+      this.sortAsc = !this.sortAsc
     },
   },
-};
+}
 </script>
 
 <style>
-/* Global reset */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
-html, body {
+html,
+body {
   width: 100%;
-  font-family: "Poppins", sans-serif;
+  font-family: 'Poppins', sans-serif;
   background: #f5f7fa;
 }
 
@@ -114,13 +156,13 @@ html, body {
   padding: 20px;
 }
 
-/* Header */
+/* Header Section --------------- */
 .header {
   background: linear-gradient(90deg, #4b79a1, #283e51);
   padding: 20px;
   border-radius: 12px;
   color: white;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   margin-bottom: 35px;
 }
 
@@ -148,8 +190,9 @@ html, body {
   font-weight: bold;
   font-size: 1.2rem;
 }
+/* --------------- */
 
-/* Filters */
+/* Filters SECTION --------------- */
 .filters {
   margin-top: 15px;
   display: flex;
@@ -177,15 +220,45 @@ html, body {
 .filters button:hover {
   transform: translateY(-2px);
 }
+/*  --------------- */
 
-/* Property Grid */
+/* Search & Sort Section --------------- */
+.search-sort {
+  margin-top: 15px;
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.search-sort input {
+  padding: 8px 12px;
+  border-radius: 20px;
+  border: none;
+  width: 250px;
+  max-width: 100%;
+}
+
+.search-sort button {
+  padding: 8px 18px;
+  border-radius: 20px;
+  border: none;
+  background: #34495e;
+  color: white;
+  cursor: pointer;
+  font-weight: 600;
+}
+/* --------------- */
+
+/* Property Grid Section --------------- */
 .property-grid {
   display: grid;
   gap: 25px;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
 }
+/* Property Grid Section --------------- */
 
-/* Responsive */
+/* Responsiveness Section --------------- */
 @media (max-width: 768px) {
   .nav-bar {
     flex-direction: column;
@@ -200,6 +273,7 @@ html, body {
     grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   }
 }
+/* --------------- */
 
 @media (max-width: 480px) {
   .title {
@@ -219,8 +293,13 @@ html, body {
     gap: 15px;
   }
 
-  .filters button {
+  .filters button,
+  .search-sort button {
     padding: 6px 12px;
+    font-size: 0.85rem;
+  }
+
+  .search-sort input {
     font-size: 0.85rem;
   }
 }
