@@ -3,7 +3,7 @@
     <!-- Header -->
     <header class="header">
       <div class="nav-bar">
-        <div class="logo">🏡 HomeFinder</div>
+        <div class="logo">🏡 Cozy Homes Co.</div>
         <h1 class="title">Property Listings</h1>
         <div class="wishlist">❤️ Saved: <span>{{ wishlist.length }}</span></div>
       </div>
