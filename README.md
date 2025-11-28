@@ -1,6 +1,6 @@
 # property-mini-listings
 
-This template should help get you started developing with Vue 3 in Vite.
+This is a mini-web application that simulates a property listing website for users to view and purchase property while also being able to save which ones they wish to view later to a wishlist..
 
 ## Recommended IDE Setup
 
